@@ -21,6 +21,12 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Setup Gradle Wrapper
+        run: |
+          if [ ! -f "./gradlew" ]; then
+            gradle wrapper
+          fi
+
       - name: Grant Execute Permission for Gradle
         run: chmod +x ./gradlew
 
