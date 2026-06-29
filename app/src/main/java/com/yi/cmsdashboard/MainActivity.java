@@ -1,10 +1,14 @@
 package com.yi.cmsdashboard;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
+import android.view.Gravity;
 import android.widget.Button;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import org.json.JSONObject;
@@ -16,43 +20,43 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView tvStatus;
-    private TextView tvErrorLogs;
-    private Button btnRefresh;
-    private Handler autoRefreshHandler;
-    private Runnable refreshRunnable;
-    private OkHttpClient client;
-    
+
     private final String GITHUB_TOKEN = "YOUR_CMS_TOKEN";
     private final String OWNER = "YOUR_GITHUB_ID";
     private final String REPO = "YOUR_REPO_NAME";
+
+    private TableLayout statusTable;
+    private TextView errorLogView;
+    private OkHttpClient client;
+    private Handler mainHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tvStatus = findViewById(R.id.tvStatus);
-        tvErrorLogs = findViewById(R.id.tvErrorLogs);
-        btnRefresh = findViewById(R.id.btnRefresh);
+        statusTable = findViewById(R.id.statusTable);
+        errorLogView = findViewById(R.id.errorLogView);
+        Button refreshBtn = findViewById(R.id.refreshBtn);
+
         client = new OkHttpClient();
+        mainHandler = new Handler(Looper.getMainLooper());
 
-        btnRefresh.setOnClickListener(v -> fetchCMSData());
+        refreshBtn.setOnClickListener(v -> fetchData());
 
-        autoRefreshHandler = new Handler(Looper.getMainLooper());
-        refreshRunnable = new Runnable() {
+        // Auto-refresh every 5 mins
+        Runnable autoRefresh = new Runnable() {
             @Override
             public void run() {
-                fetchCMSData();
-                autoRefreshHandler.postDelayed(this, 300000);
+                fetchData();
+                mainHandler.postDelayed(this, 300000);
             }
         };
-        autoRefreshHandler.post(refreshRunnable);
+        mainHandler.post(autoRefresh);
     }
 
-    private void fetchCMSData() {
+    private void fetchData() {
         String url = "https://api.github.com/repos/" + OWNER + "/" + REPO + "/contents/status.txt";
-        
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Authorization", "token " + GITHUB_TOKEN)
@@ -62,36 +66,72 @@ public class MainActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> tvErrorLogs.setText("Network/API Error: " + e.getMessage()));
+                updateErrorLog("Network Error: " + e.getMessage());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful()) {
                     try {
                         String jsonData = response.body().string();
                         JSONObject jsonObject = new JSONObject(jsonData);
-                        String encodedContent = jsonObject.getString("content");
-                        byte[] decodedBytes = Base64.decode(encodedContent, Base64.DEFAULT);
-                        String statusText = new String(decodedBytes);
-
-                        runOnUiThread(() -> {
-                            tvStatus.setText(statusText);
-                            tvErrorLogs.setText("Sync Successful.");
-                        });
+                        String base64Content = jsonObject.getString("content");
+                        String decodedText = new String(Base64.decode(base64Content, Base64.DEFAULT));
+                        
+                        updateTableUI(decodedText);
+                        updateErrorLog("Sync Successful.");
                     } catch (Exception e) {
-                        runOnUiThread(() -> tvErrorLogs.setText("Data Parsing Error: " + e.getMessage()));
+                        updateErrorLog("Parsing Error: " + e.getMessage());
                     }
                 } else {
-                    runOnUiThread(() -> tvErrorLogs.setText("GitHub API Blocked / Error Code: " + response.code()));
+                    updateErrorLog("GitHub API Error: " + response.code());
                 }
             }
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        autoRefreshHandler.removeCallbacks(refreshRunnable);
+    private void updateTableUI(String data) {
+        mainHandler.post(() -> {
+            // Keep header row (index 0), remove the rest to avoid duplicate data on refresh
+            int count = statusTable.getChildCount();
+            for (int i = count - 1; i > 0; i--) {
+                statusTable.removeViewAt(i);
+            }
+
+            String[] lines = data.split("\n");
+            for (String line : lines) {
+                if (line.trim().isEmpty() || line.startsWith("Bot_ID")) continue;
+
+                String[] parts = line.split("\\|");
+                if (parts.length >= 4) {
+                    TableRow row = new TableRow(MainActivity.this);
+                    row.setPadding(8, 12, 8, 12);
+
+                    row.addView(createCell(parts[0].trim())); // Bot ID
+                    row.addView(createCell(parts[1].trim())); // Status
+                    row.addView(createCell(parts[2].trim())); // Priority
+                    row.addView(createCell(parts[3].trim())); // Platform
+
+                    statusTable.addView(row);
+                }
+            }
+        });
+    }
+
+    private TextView createCell(String text) {
+        TextView tv = new TextView(this);
+        tv.setText(text);
+        tv.setTextColor(Color.WHITE);
+        tv.setGravity(Gravity.CENTER);
+        tv.setPadding(4, 4, 4, 4);
+        return tv;
+    }
+
+    private void updateErrorLog(String msg) {
+        mainHandler.post(() -> {
+            if (errorLogView != null) {
+                errorLogView.setText(msg);
+            }
+        });
     }
 }
