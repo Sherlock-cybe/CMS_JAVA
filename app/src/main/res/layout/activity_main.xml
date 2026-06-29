@@ -30,21 +30,28 @@
         android:layout_weight="1"
         android:background="#1E1E1E">
         
-        <TableLayout
-            android:id="@+id/statusTable"
+        <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:stretchColumns="0,1,2,3">
+            android:layout_height="wrap_content">
 
-            <TableRow
-                android:background="#333333"
-                android:padding="8dp">
-                <TextView android:text="Bot" android:textColor="#FFFFFF" android:textStyle="bold" android:gravity="center"/>
-                <TextView android:text="Status" android:textColor="#FFFFFF" android:textStyle="bold" android:gravity="center"/>
-                <TextView android:text="Priority" android:textColor="#FFFFFF" android:textStyle="bold" android:gravity="center"/>
-                <TextView android:text="Platform" android:textColor="#FFFFFF" android:textStyle="bold" android:gravity="center"/>
-            </TableRow>
-        </TableLayout>
+            <TableLayout
+                android:id="@+id/statusTable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:stretchColumns="*">
+
+                <TableRow
+                    android:background="#333333"
+                    android:padding="8dp">
+                    <TextView android:text="Bot" android:textColor="#FFFFFF" android:textStyle="bold" android:gravity="center" android:paddingRight="15dp"/>
+                    <TextView android:text="Status" android:textColor="#FFFFFF" android:textStyle="bold" android:gravity="center" android:paddingRight="15dp"/>
+                    <TextView android:text="Priority" android:textColor="#FFFFFF" android:textStyle="bold" android:gravity="center" android:paddingRight="15dp"/>
+                    <TextView android:text="Platform" android:textColor="#FFFFFF" android:textStyle="bold" android:gravity="center" android:paddingRight="15dp"/>
+                    <TextView android:text="Target Link" android:textColor="#FFFFFF" android:textStyle="bold" android:gravity="center" android:paddingRight="15dp"/>
+                    <TextView android:text="Action Summary" android:textColor="#FFFFFF" android:textStyle="bold" android:gravity="center"/>
+                </TableRow>
+            </TableLayout>
+        </HorizontalScrollView>
     </ScrollView>
 
     <TextView
