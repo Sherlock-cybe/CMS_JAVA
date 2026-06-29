@@ -19,12 +19,11 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: gradle
 
-       -  name: Setup Gradle Wrapper
-          run: |
-          gradle wrapper --gradle-version 8.0
-          
+      - name: Setup Gradle and Generate Wrapper
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: 8.0
 
       - name: Grant Execute Permission for Gradle
         run: chmod +x ./gradlew
@@ -36,5 +35,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: CMS-Dashboard-App
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: '**/*.apk'
           
