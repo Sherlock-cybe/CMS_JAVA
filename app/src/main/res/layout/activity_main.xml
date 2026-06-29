@@ -3,64 +3,66 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#121212">
+    android:background="#121212"
+    android:padding="16dp">
 
     <Button
-        android:id="@+id/btnRefresh"
+        android:id="@+id/refreshBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="FORCE REFRESH"
         android:backgroundTint="#007BFF"
         android:textColor="#FFFFFF"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="LIVE BOT STATUS (P0 - P5)"
         android:textColor="#00FF00"
         android:textStyle="bold"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#1E1E1E"
-        android:padding="12dp">
+        android:background="#1E1E1E">
         
-        <TextView
-            android:id="@+id/tvStatus"
+        <TableLayout
+            android:id="@+id/statusTable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
-            android:fontFamily="monospace"
-            android:textSize="14sp"/>
+            android:stretchColumns="0,1,2,3">
+
+            <TableRow
+                android:background="#333333"
+                android:padding="8dp">
+                <TextView android:text="Bot" android:textColor="#FFFFFF" android:textStyle="bold" android:gravity="center"/>
+                <TextView android:text="Status" android:textColor="#FFFFFF" android:textStyle="bold" android:gravity="center"/>
+                <TextView android:text="Priority" android:textColor="#FFFFFF" android:textStyle="bold" android:gravity="center"/>
+                <TextView android:text="Platform" android:textColor="#FFFFFF" android:textStyle="bold" android:gravity="center"/>
+            </TableRow>
+        </TableLayout>
     </ScrollView>
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SYSTEM ERROR LOGS"
         android:textColor="#FF0000"
         android:textStyle="bold"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp" />
 
-    <ScrollView
+    <TextView
+        android:id="@+id/errorLogView"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:background="#2C1414"
-        android:padding="12dp">
-        
-        <TextView
-            android:id="@+id/tvErrorLogs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#FF5555"
-            android:fontFamily="monospace"
-            android:textSize="12sp"/>
-    </ScrollView>
+        android:layout_height="100dp"
+        android:background="#3A1111"
+        android:textColor="#FF6666"
+        android:padding="8dp"
+        android:text="Waiting for sync..." />
+
 </LinearLayout>
