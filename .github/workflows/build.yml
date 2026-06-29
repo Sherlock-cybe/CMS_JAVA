@@ -25,6 +25,11 @@ jobs:
         with:
           gradle-version: '8.0'
 
+      - name: Enable AndroidX Flags
+        run: |
+          echo "android.useAndroidX=true" >> gradle.properties
+          echo "android.enableJetifier=true" >> gradle.properties
+
       - name: Build Debug APK with Global Gradle
         run: gradle assembleDebug
 
