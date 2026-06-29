@@ -21,9 +21,9 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle and Generate Wrapper
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-version: 8.0
+          gradle-version: '8.0'
 
       - name: Grant Execute Permission for Gradle
         run: chmod +x ./gradlew
