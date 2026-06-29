@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
         refreshBtn.setOnClickListener(v -> fetchData());
 
-        // Auto-refresh every 5 mins
         Runnable autoRefresh = new Runnable() {
             @Override
             public void run() {
@@ -92,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateTableUI(String data) {
         mainHandler.post(() -> {
-            // Keep header row (index 0), remove the rest to avoid duplicate data on refresh
             int count = statusTable.getChildCount();
             for (int i = count - 1; i > 0; i--) {
                 statusTable.removeViewAt(i);
@@ -103,14 +101,16 @@ public class MainActivity extends AppCompatActivity {
                 if (line.trim().isEmpty() || line.startsWith("Bot_ID")) continue;
 
                 String[] parts = line.split("\\|");
-                if (parts.length >= 4) {
+                if (parts.length >= 6) {
                     TableRow row = new TableRow(MainActivity.this);
                     row.setPadding(8, 12, 8, 12);
 
-                    row.addView(createCell(parts[0].trim())); // Bot ID
-                    row.addView(createCell(parts[1].trim())); // Status
-                    row.addView(createCell(parts[2].trim())); // Priority
-                    row.addView(createCell(parts[3].trim())); // Platform
+                    row.addView(createCell(parts[0].trim()));
+                    row.addView(createCell(parts[1].trim()));
+                    row.addView(createCell(parts[2].trim()));
+                    row.addView(createCell(parts[3].trim()));
+                    row.addView(createCell(parts[4].trim()));
+                    row.addView(createCell(parts[5].trim()));
 
                     statusTable.addView(row);
                 }
